@@ -19,10 +19,20 @@
 
         const [state] = useContext(UserContext);
 
-        const {data:profile}=useQuery("profileChance",async()=>{
-            const response = await API.get('/profile/'+ state?.user?.user?.id)
-            return response.data.data.user.data
-        })
+        const [form, setForm] = useState({
+            phone: '',
+            gender: '',
+            address: '',
+        });
+
+        const getProfile = async () => {
+            const response = await API.get("/profile");
+            setForm({
+                phone:response.data?.data?.user?.data?.phone,
+                gender:response.data?.data?.user?.data?.gender,
+                address:response.data?.data?.user?.data?.address,
+            })
+            };
 
         let { data: transactions, refetch: transactionsRefetch } = useQuery(
             "transactionsCache",
@@ -39,7 +49,9 @@
 
             }
             );
-            
+            useEffect(()=>{
+            getProfile()
+        },[])
     return (
         <div>
             <Navbar collapseOnSelect expand="lg">
@@ -100,13 +112,13 @@
                     <Row>
                     <Col md="6">
                         <img
-                        src={profile?.image ? profile?.image : imgBlank}
+                        src={imgBlank}
                         className="img-fluid rounded"
                         alt="avatar"
                         />
                     </Col>
                     <Col md="6">
-                    <Link to={"/edit-profile/"+profile?.id}>
+                    <Link to={"/edit-profile/"+state.user.id}>
                         <img
                             src={editimg}
                             className="img-edit-profile"
@@ -121,17 +133,17 @@
 
                         <div className="profile-header">Phone</div>
                         <div className="profile-content">
-                        {profile?.phone ? profile?.phone : '-'}
+                        {form?.phone ? form?.phone : '-'}
                         </div>
 
                         <div className="profile-header">Gender</div>
                         <div className="profile-content">
-                        {profile?.gender ? profile?.gender : '-'}
+                        {form?.gender ? form?.gender : '-'}
                         </div>
 
                         <div className="profile-header">Address</div>
                         <div className="profile-content">
-                        {profile?.address ? profile?.address : '-'}
+                        {form?.address ? form?.address : '-'}
                         </div>
                     </Col>
                     </Row>
